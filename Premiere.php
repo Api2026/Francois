@@ -1,53 +1,67 @@
 <?php
-// Premiere.php
 
-// Automatic Email for Transactions
-function sendTransactionEmail($email, $transactionDetails) {
-    $subject = 'Transaction Confirmation';
-    $message = 'Details: ' . $transactionDetails;
-    mail($email, $subject, $message);
-}
+namespace App\Controller;
 
-// Manual Admin Validation System
-function validateTransaction($transactionId) {
-    // Retrieve transaction from database
-    $transaction = getTransaction($transactionId);
-    // If transaction meets criteria, validate
-    if ($transaction['amount'] > 100) {
-        // Mark as validated
-        $transaction['validated'] = true;
+use App\Entity\Membership;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class Premiere
+{
+    private $em;
+
+    public function __construct(EntityManagerInterface $em)
+    {
+        $this->em = $em;
     }
-    return $transaction;
-}
 
-// User Profile System
-class UserProfile {
-    public $name;
-    public $phone;
-    public $address;
-    public $bio;
-    public $facebookLink;
-    public $instagramLink;
+    public function publish(Request $request): Response
+    {
+        // Check if the user is an admin
+        if (!$this->isAdmin($request->getUser())) {
+            return new Response('Unauthorized', Response::HTTP_UNAUTHORIZED);
+        }
 
-    public function __construct($name, $phone, $address, $bio, $facebookLink, $instagramLink) {
-        $this->name = $name;
-        $this->phone = $phone;
-        $this->address = $address;
-        $this->bio = $bio;
-        $this->facebookLink = $facebookLink;
-        $this->instagramLink = $instagramLink;
+        // Publishing logic here
+        // ...
+
+        return new Response('Published', Response::HTTP_OK);
+    }
+
+    public function viewProfile(Request $request, $userId): Response
+    {
+        // Check if the user is following
+        if (!$this->isFollowing($request->getUser(), $userId)) {
+            return new Response('Forbidden', Response::HTTP_FORBIDDEN);
+        }
+
+        // Profile viewing logic here
+        // ...
+
+        return new Response('Profile details', Response::HTTP_OK);
+    }
+
+    public function monitorMessages(Request $request): Response
+    {
+        // Admin monitoring logic
+        if ($this->isAdmin($request->getUser())) {
+            // Retrieve messages
+            // Logic to get messages for monitoring
+            return new Response('Monitoring messages', Response::HTTP_OK);
+        }
+        return new Response('Unauthorized', Response::HTTP_UNAUTHORIZED);
+    }
+
+    private function isAdmin($user): bool
+    {
+        // Logic to determine if user is admin
+        return in_array($user, ['admin1', 'admin2']); // Example admin users
+    }
+
+    private function isFollowing($user, $userId): bool
+    {
+        // Logic to determine if the user is following
+        return true; // Example logic
     }
 }
-
-// Automatic Email for Messages
-function sendMessageEmail($email, $message) {
-    $subject = 'New Message';
-    mail($email, $subject, $message);
-}
-
-// Transaction History Tracking
-function getTransactionHistory($userId) {
-    // Retrieve from database
-    return getTransactionsByUserId($userId);
-}
-?>
