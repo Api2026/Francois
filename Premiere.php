@@ -1,46 +1,53 @@
 <?php
-// Secure configurations
-ini_set('display_errors', 0);
-error_reporting(E_ALL);
+// Premiere.php
 
-// Database connection setup
-$servername = 'localhost';
-$username = 'username';
-$password = 'password';
-$dbname = 'database';
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die('Connection failed: ' . $conn->connect_error);
+// Automatic Email for Transactions
+function sendTransactionEmail($email, $transactionDetails) {
+    $subject = 'Transaction Confirmation';
+    $message = 'Details: ' . $transactionDetails;
+    mail($email, $subject, $message);
 }
 
-// WhatsApp Integration
-$whatsappApiUrl = 'https://api.whatsapp.com/send?text=';
-$whatsappGroupLink = 'https://chat.whatsapp.com/JjAilDEf1RgKVFX1iWEJgx';
-
-// Function to send message via WhatsApp
-function sendWhatsAppMessage($message) {
-    global $whatsappApiUrl, $whatsappGroupLink;
-    $fullMessage = urlencode($message) . ' ' . $whatsappGroupLink;
-    header('Location: ' . $whatsappApiUrl . $fullMessage);
-    exit();
+// Manual Admin Validation System
+function validateTransaction($transactionId) {
+    // Retrieve transaction from database
+    $transaction = getTransaction($transactionId);
+    // If transaction meets criteria, validate
+    if ($transaction['amount'] > 100) {
+        // Mark as validated
+        $transaction['validated'] = true;
+    }
+    return $transaction;
 }
 
-// Example usage:
-sendWhatsAppMessage('Check out this new feature!');
+// User Profile System
+class UserProfile {
+    public $name;
+    public $phone;
+    public $address;
+    public $bio;
+    public $facebookLink;
+    public $instagramLink;
 
-// Include HTML output
+    public function __construct($name, $phone, $address, $bio, $facebookLink, $instagramLink) {
+        $this->name = $name;
+        $this->phone = $phone;
+        $this->address = $address;
+        $this->bio = $bio;
+        $this->facebookLink = $facebookLink;
+        $this->instagramLink = $instagramLink;
+    }
+}
+
+// Automatic Email for Messages
+function sendMessageEmail($email, $message) {
+    $subject = 'New Message';
+    mail($email, $subject, $message);
+}
+
+// Transaction History Tracking
+function getTransactionHistory($userId) {
+    // Retrieve from database
+    return getTransactionsByUserId($userId);
+}
 ?>
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>New Features</title>
-</head>
-<body>
-    <h1>Welcome to the Refactored Premiere Script</h1>
-    <p>Enjoy the new features and integrations!</p>
-</body>
-</html>
